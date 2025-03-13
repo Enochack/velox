@@ -246,6 +246,9 @@ TEST_F(PlanNodeSerdeTest, filter) {
              .filter("c3 = ARRAY[1,2,3]")
              .planNode();
   testSerde(plan);
+
+  plan = PlanBuilder(pool()).values({data_}).filter("c0 in (0, 1)").planNode();
+  testSerde(plan);
 }
 
 TEST_F(PlanNodeSerdeTest, groupId) {
@@ -516,6 +519,19 @@ TEST_F(PlanNodeSerdeTest, hashJoin) {
                  {"u0"},
                  PlanBuilder(planNodeIdGenerator).values({build}).planNode(),
                  "t3 = ARRAY[1,2,3]",
+                 {"t0", "t1", "u2", "t2"},
+                 core::JoinType::kInner)
+             .planNode();
+
+  testSerde(plan);
+
+  plan = PlanBuilder(planNodeIdGenerator, pool())
+             .values({probe})
+             .hashJoin(
+                 {"t0"},
+                 {"u0"},
+                 PlanBuilder(planNodeIdGenerator).values({build}).planNode(),
+                 "t1 in (0, 1)",
                  {"t0", "t1", "u2", "t2"},
                  core::JoinType::kInner)
              .planNode();
