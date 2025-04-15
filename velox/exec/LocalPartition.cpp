@@ -225,6 +225,7 @@ RowVectorPtr LocalExchange::getOutput() {
   if (data != nullptr) {
     auto lockedStats = stats_.wlock();
     lockedStats->addInputVector(data->estimateFlatSize(), data->size());
+    data->setType(outputType_);
   }
   return data;
 }
